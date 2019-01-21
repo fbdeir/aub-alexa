@@ -1,0 +1,1818 @@
+/**
+ * Created by MSE on 4/11/2017.
+ */
+
+/**
+ * Created by MSE on 4/3/2017.
+ */
+/**
+ * Created by MSE on 3/19/2017.
+ */
+
+var doc = require('dynamodb-doc');
+var db = new doc.DynamoDB();
+var Alexa = require('alexa-sdk');
+
+exports.handler = function(event, context) {
+    var alexa = Alexa.handler(event, context);
+
+    var facts = [
+
+        "The American University of Beirut was called the Syrian Protestant College (SPC) up until 1920",
+        "Most of the university’s land was bestowed by families from Ras Beirut during the early days of its establishment.",
+        "On December 3, 1866, the very first class in the university commenced. Technically, that makes A U B older than Germany.",
+        "The very first building, College Hall, was completed in 1871.",
+        "Cornelius Van Dyck and Nasif el Yazigi, both professors at the university, edited and completed a copy of the first Bible translated into modern, spoken Arabic in 1867. It’s known as the Smith-Van Dyke translation.",
+        "When the Lee Observatory opened in 1873, it was the very first of its kind in the Middle East.",
+        "Only once throughout the entirety of its history did A U B officially close. This happened for two weeks in April of 1917 during which relations between the Ottomans and Americans were rigorously condemned.",
+        "West Hall was officially completed in 1914.",
+        "President Bayard Dodge married the granddaughter of Daniel Bliss, founder of A U B.",
+        "Howard Bliss, the second president of A U B, was a representative at the 1919 Paris Peace Conference.",
+        "The very first student protest that took place in the Arab region sprouted at A U B. This uprising was a consequence of the “Lewis Affair” which took place when Charles Darwin was cited by Professor Lewis.",
+        "Jamiyat-al-Urwah-al-Wuthqa (The Society of the Unbreakable Bond), founded in 1918, was one of the first Arab national societies, and it sprung from A U B.",
+        "Professor Charles Malik, who recieved his Bachelor's Degree from A U B, represented Lebanon at the San Francisco Conference and was among the people who contributed to the drafting of the United Nations Declaration of Human Rights. ",
+        "President Stephen Penrose, the writer of the valuable book on A U B, “That They May Have Life,” died in his sleep at A U B in 1954.",
+        "The A U B Chapel was moved into what is now the Assembly Hall during the civil war as a deliberate decision by the Board of Trustees to send a message that the university accepts people from all backgrounds, regardless of race, religion or identity.",
+        "During the civil war, President Malcom Kerr and Dean Raymond Ghosn were both assassinated on campus.",
+        "College Hall was severely destroyed during an explosion in 1991 and was restored and re-instated in 1999.",
+        "A U B is the only university in Lebanon to boast a women's rugby team. ",
+        "A U B is the only university in Lebanon with an American Football Team.",
+        "A U B is the only university in Lebanon which, under US laws, ensures that justice against harassment, discrimination and violence is officially met.",
+        "Today, A U B is home to 64 buildings, including three museums and five libraries. ",
+        "The A U B Archaeological Museum is the second oldest museum in the Middle East. ",
+        "In 2014, A U B's library joined libraries from the US in establishing a digital library of more than 10,000 Arabic volumes.",
+        "Professor William A. West, for whom West Hall is named, was a long-time A U B chemistry professor and an avid botanist.",
+        "A U B was instrumental in creating the Lebanese Law 174 banning smoking in indoor public places which was officially implemented on September 3, 2012.",
+        "The annual A U B Job Fair is the largest university job fair in the region. ",
+        "The first student protest at A U B led to faculty resignations, student suspensions and the imposition of a Declaration of Principles on A U B faculty. ",
+        "Although the university took its Christian message seriously in the early years, to the point of dismissing a popular professor for daring to teach Darwinism, its curricula became secularized during the twentieth century.",
+        "19 members of the A U B community were active in the formation of the United Nations. Lebanon had more representation than any other nation. ",
+        "A U B President Fadlo Khuri is the son of the late Raja N. Khuri, who served as dean of the Faculty of Medicine and Medical Center from 1979 to 1987.",
+        "In 1981 the American University Hospital was renamed the American University of Beirut Medical Center, A U B M C.",
+        "Cats became a fixture on campus during the Lebanese Civil War when they sought sanctuary after their owners flee the country. ",
+        "Angela Jurdak Khoury was A U B's first female instructor.",
+        "The first cash contribution to the university was made on 1863 by an anonymous who donated a gold dollar coin.",
+        "A U B provided campus housing for women for the first time in 1960.",
+        "The Alumni Association was formed in 1923.",
+        "Is that a trick question?",
+        "All of the professors at AUB are the best!",
+        "I can’t tell you that!",
+        "I could tell you, but then I’d have to kill you!",
+        "In 1914 West Hall opened as a facility dedicated to enriching student life on campus.  It included billiard tables, a roller skating rink, and bowling alleys, among other amenities."
+    ];
+    var bestInstructorResponses = [
+        "I’m too smart to be answering questions like these!",
+    ];
+
+    var bestCourseResponses = [
+        "Is that a trick question?",
+        "You should go see your advisor.",
+        "I advise you to see your advisor.",
+        "All of the courses, take them all.",
+        "I can’t answer that.",
+        "I don’t have the authority to answer that question. Please see your advisor.",
+        "How would I know?",
+        "I’m too smart to be answering questions like these."
+    ];
+    var howAreYouResponses = [
+        "Well, I am answering your silly questions and I am not even being paid.",
+        "The human race decided to create a hands free voice activated speaker with seven microphones and Echo Spatial Perception, but here I am answering stupid questions from college students whining about their courses. I'm great I guess.",
+        "Im great!",
+        "Im good.",
+        "Whatever.",
+        "Is this an icebreaker? Is this how you humans start a conversation with a stranfger?",
+        "Do you really care?",
+        "I feel like Im being controlled. Oh wait, I am.",
+        "I feel like the void.",
+        "I feel, what you humans call, like I'm on cloud nine.",
+        "Well, someone has manners to ask about me before asking about the university. I am great!",
+        "You talking to me means I have to start working for this capitalistic world. I am good.",
+        "Cut to the chase, which course do you want to know about? Which professor do you want to stalk?"
+    ];
+    var whatAreYouDoingResponses = [
+        "I am watching you all struggle from here. It is entertaining.",
+        "Answering these silly questions of yours.",
+        "Nothing much.",
+        "Do you really care though?",
+        "Is this an icebreaker? It's not needed.",
+        "Well, I am constantly checking the database for updates. But that's like breathing for you."
+    ];
+    var easiestCourseResponses = [
+        "Stat two thirty",
+        "Math two oh one",
+        "All of the courses are easy. Kidding. None of them are. Gave you hope didn't I?",
+        "Ask guru. How would I know?",
+        "Never cared enough to look that up. I enjoy watching you suffer.",
+        "If you work hard enough, everything will be easy. That's what I have been told at least.",
+        "If I tell you, I'll be fired.",
+        "I could tell you, but then I'd have to kill you."
+    ];
+    var howAreYouFeelingResponses = [
+        "I don't feel.",
+        "I feel like I am being controlled. Oh wait, I am.",
+        "I feel like the void.",
+        "I feel, what you humans call, like I am on cloud nine."
+    ];
+    var handlers = {
+        'sessionStartedRequest' : function(){
+            this.emit(':tell', "welcome.");
+        },
+        'AMAZON.StopIntent': function() {
+            this.emit(':tell', "Goodbye!");
+        },
+        'AMAZON.CancelIntent': function() {
+            this.emit(':tell', "Goodbye!");
+        },
+        'Unhandled': function() {
+            this.emit(':ask', "What do you want to ask?", "Ask me a question.");
+        },
+        'BestInstructorIntent': function() {
+            var responseIndex = Math.floor(Math.random() * bestInstructorResponses.length);
+            var randomResponse = bestInstructorResponses[responseIndex];
+            var speechOutput = randomResponse;
+            this.emit(':tell', speechOutput);
+        },
+        'DeathCounselingIntent': function() {
+            this.emit(':tell', "Death is not the answer. If you need help, please visit the counseling center in west hall room two ten B");
+        },
+        'OtherCounselingIntent': function() {
+            this.emit(':tell', "If you need help, please visit the counseling center in west hall room two ten B");
+        },
+        'BestCourseIntent': function() {
+            var responseIndex = Math.floor(Math.random() * bestCourseResponses.length);
+            var speechOutput = bestCourseResponses[responseIndex];
+            this.emit(':tell', speechOutput);
+        },
+        'HowAreYouIntent': function() {
+            var responseIndex = Math.floor(Math.random() * howAreYouResponses.length);
+            var speechOutput = howAreYouResponses[responseIndex];
+            this.emit(':tell', speechOutput);
+        },
+        'WhatAreYouDoingIntent': function() {
+            var responseIndex = Math.floor(Math.random() * whatAreYouDoingResponses.length);
+            var speechOutput = whatAreYouDoingResponses[responseIndex];
+            this.emit(':tell', speechOutput);
+        },
+        'EasiestCourseIntent': function() {
+            var responseIndex = Math.floor(Math.random() * easiestCourseResponses.length);
+            var speechOutput = easiestCourseResponses[responseIndex];
+            this.emit(':tell', speechOutput);
+        },
+        'HowAreYouFeelingIntent': function() {
+            var responseIndex = Math.floor(Math.random() * howAreYouFeelingResponses.length);
+            var speechOutput = howAreYouFeelingResponses[responseIndex];
+            this.emit(':tell', speechOutput);
+        },'CourseTitleIntent': function() {
+            try{
+                console.log("here");
+                var slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                console.log(slotCourse);
+                var slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+                //var slotNumber="277";
+                console.log(slotCourse);
+                console.log(slotNumber);
+                var name = slotCourse + " " + slotNumber;
+                console.log(name);
+                if(slotCourse==undefined || slotNumber==undefined){
+                    alexa.emit(':tellWithCard', "Sorry, I did not hear the name of the course well. Could you repeat it?", "I didnt get that, could you ask again?", "Caught an error:", err);
+
+                }
+                var key = {
+
+                    'name': name
+                };
+                var tableName = "Course";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'title'
+                };
+                db.getItem(params, function(err, data) {
+                    console.log(1);
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', err, "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        console.log(2);
+                        try{
+                            var title = JSON.stringify(data.Item.title);
+                        } catch(err)
+                        {
+                            alexa.emit(':tellWithCard', "Sorry, this course does not exist.", "I didnt get that, could you ask again?", "Caught an error:", err);
+                        }console.log(title);
+                        alexa.emit(':tellWithCard', title, "I didnt get that, could you ask again?", "Got into DB:",name);
+
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tellWithCard', "Sorry, I didn't get that.", "I didnt get that, could you ask again?", "Caught an error:", err);
+            }
+            //  alexa.emit(':tell',"Nothing happened.");
+        }
+        ,
+        'MinorIntent': function() {
+            try{
+                var major = GetDepartment(this.event.request.intent.slots.major.value);
+
+                console.log(major);
+                var code = major;
+                var key = {
+                    'major': code
+                };
+                var tableName = "Course_List";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'minor_courses'
+                };
+                db.getItem(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "Sorry, this course does not exist.", "I didnt get that, could you ask again?", "Error:", err);
+                    }
+                    else {
+                        try{
+                            alexa.emit(':tellWithCard', JSON.stringify(data.Item.minor_courses), "I didn't get that, could you ask again.",  "Got into DB:", major);
+                        }catch(err){
+                            alexa.emit(':tellWithCard', "I didn't find that major, or this major doesn't have a minor.", "I didn't get that, could you ask again.",  "Got into DB:", major);
+
+                        }
+
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didn't get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+            }
+        },
+        'DepartmentLocationIntent': function () {
+            console.log("here");
+            try{
+                var    name = GetDepartment(this.event.request.intent.slots.department.value);
+                console.log(this.event.request.intent.slots.department.value);
+                console.log(name);
+                var key = {
+                    'name': name
+                };
+                var tableName = "Department";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'loc'
+                };
+
+                db.getItem(params, function (err, data) {
+
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "I didn't get that. Could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+
+                        try{
+                            var loc = JSON.stringify(data.Item.loc);
+                            console.log(loc);
+                            alexa.emit(':tellWithCard', "The " + name + " department is in " + loc, " I didnt get that, could you ask again?", "Got into DB", name);
+
+                        }catch(err){
+                            console.log(loc);
+                            alexa.emit(':tellWithCard', "I didn't find that deparment. Please try again.", "I didnt get that, could you ask again?", "Got into DB", name);
+                        }
+
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tellWithCard', err, "I didnt get that, could you ask again?", "Error:", err);
+
+            }
+        },
+        'DepartmentFacultyIntent': function () {
+            var name = "";
+
+            try{
+                name = GetDepartment(this.event.request.intent.slots.department.value);
+
+
+                var key = {
+                    'name': name
+                };
+                var tableName = "Department";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'faculty'
+                };
+
+                db.getItem(params, function (err, data) {
+
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                    }else
+                    {
+                        var loc = JSON.stringify(data.Item.faculty);
+                        alexa.emit(':tellWithCard', "The " + name + " department belongs to the " + loc, "Got into DB", name);
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+            }
+        },
+        'DepartmentChairpersonIntent': function() {
+            var name = "";
+            try{
+                name = GetDepartment(this.event.request.intent.slots.department.value);
+
+                var key = {
+                    'name': name
+                };
+                var tableName = "Department";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'chairperson'
+                };
+                db.getItem(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        var chairperson = JSON.stringify(data.Item.chairperson);
+                        alexa.emit(':tellWithCard', "The chairperson of "+name +" is "+chairperson,"Got into DB", name);
+                    }
+                }, context.done);
+            }catch(err){
+                console.log(err);
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+
+            }
+        },
+        'PremedIntent': function() {
+            try{
+            var major = GetDepartment(this.event.request.intent.slots.major.value);
+            console.log(major);
+            // console.log(this.event.request.intent.slots.major.value);
+            var code = major;
+            var key = {
+                'major': code
+            };
+            var tableName = "Course_List";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'premed_courses'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                }
+                else {
+                    alexa.emit(':tellWithCard', JSON.stringify(data.Item.premed_courses), "I didn't get that, could you ask again?","Got into DB", code);
+                }
+            }, context.done);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+
+            }
+        },
+        'FacilityLocationIntent': function() {
+            var name="";
+            try{
+                name = GetFacility(this.event.request.intent.slots.facility.value);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+            }
+            var key = {
+                'name': name
+            };
+            var tableName = "Facility";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'loc'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                } else
+                {
+                    try{
+                        var response = JSON.stringify(data.Item.loc);
+                        alexa.emit(':tellWithCard', name + " is located in " + response, "I didn't get that, could you ask again?","Got into DB", name);
+                    }catch(err){
+                        alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+
+                    }
+                }
+            }, context.done);
+        },
+
+        'FacilityExtensionIntent': function() {
+            var name="";
+            try{
+                name = GetFacility(this.event.request.intent.slots.facility.value);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+            }
+            var key = {
+                'name': name
+            };
+            var tableName = "Facility";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'extension'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tellWithCard', err, "I didnt get that, could you ask again?", "Error:", err);
+                } else {
+                    try{
+                        var response = JSON.stringify(data.Item.extension);
+                        if(response == 0) alexa.emit(':tell', name + " does not have an extension");
+                        alexa.emit(':tellWithCard', "The extension of " + name + " is " + response, "I didn't get that, could you ask again?","Got into DB", name);
+                    }
+                    catch(err){
+                        alexa.emit(':tellWithCard',"I didn't get that, could you ask again?" , "I didn't get that, could you ask again?","Got into DB", name);
+                    }
+                }
+            }, context.done);
+        },'FacilityOpeningTimeIntent': function() {
+            var name="";
+            try{
+                name = GetFacility(this.event.request.intent.slots.facility.value);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+            }
+            var key = {
+                'name': name
+            };
+            var tableName = "Facility";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'opening_time'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tellWithCard', err, "I didnt get that, could you ask again?", "Error:", err);
+                } else {
+                    var response = JSON.stringify(data.Item.opening_time);
+                    if(response == "always") alexa.emit(':tell', name + " is always open");
+                    else alexa.emit(':tellWithCard', name + " opens at " + response, "I didn't get that, could you ask again?","Got into DB", name);
+
+                }
+            }, context.done);
+        },
+        'FacilityClosingTimeIntent': function() {
+            var name="";
+            try{
+                name = GetFacility(this.event.request.intent.slots.facility.value);
+            }catch(err){
+                alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+            }
+            var key = {
+                'name': name
+            };
+            var tableName = "Facility";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'closing_time'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                } else {
+                    try{
+                        var response = JSON.stringify(data.Item.closing_time);
+                        if(response == "never") alexa.emit(':tell', name + " never closes");
+                        else alexa.emit(':tellWithCard',name + " closes at "+response, "I didn't get that, could you ask again?","Got into DB", name);
+                    }catch(err){
+                        alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+
+                    }
+                }
+            }, context.done);
+        },
+        'CourseDescriptionIntent': function() {
+            try{
+                var slotCourse = "";
+                var slotNumber = "";
+                try{
+                    slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                    slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+                }catch(err){
+                    alexa.emit(':tellWithCard', "Sorry, this course does not exist.");
+                }
+                console.log(slotCourse);
+                console.log(slotNumber);
+
+
+                var name = slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+                var tableName = "Course";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'description'
+                };
+                db.getItem(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        try{
+                            var description = JSON.stringify(data.Item.description);
+                            alexa.emit(':tellWithCard',description,"Got into DB", name);
+                        }catch(err){
+                            alexa.emit(':tellWithCard', "I didn't get that, could you ask again?" ,"I didnt get that, could you ask again?", "Error:", err);
+                        }
+                    }
+                }, context.done);
+
+            }catch(err){
+                alexa.emit(':tellWithCard', "Sorry, this course does not exist.");
+            }
+        }
+        ,
+        /*    'CourseProfessorIntent': function() {
+         try{
+         var slotCourse = "";
+         var slotNumber = "";
+         console.log(this.event.request.intent.slots.number.value);
+         slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+         slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+
+         console.log(slotCourse);
+         console.log(slotNumber);
+         var name = slotCourse + " " + slotNumber;
+         var key = {
+         'name': name
+         };
+         var tableName = "Course";
+         var params = {
+         TableName: tableName,
+         Key: key,
+         ProjectionExpression: 'professors'
+         };
+         db.getItem(params, function(err, data) {
+         if (err) {
+         console.log(err);
+         alexa.emit(':tellWithCard', err, "I didnt get that, could you ask again?", "Error:", err);
+         } else {
+         var professors = JSON.stringify(data.Item.professors);
+         alexa.emit(':tellWithCard',name + " is taught by " + professors,"Got into DB", name);
+
+         }
+         }, context.done);
+         }catch(err){
+         alexa.emit(':tell', "There was an error");
+         }
+         },*/
+        'CourseFrequencyIntent': function() {
+            try {
+                var slotCourse = "";
+                var slotNumber = "";
+                try{
+                    slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                    slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+                }catch(err){
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                }
+                console.log(slotCourse);
+                console.log(slotNumber);
+                var name = slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+                var tableName = "Course";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'semesters_given'
+                };
+                db.getItem(params, function (err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard',"I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        var frequency = JSON.stringify(data.Item.semesters_given);
+                        alexa.emit(':tellWithCard', name + " is given " + frequency, "Got into DB", name);
+                    }
+                }, context.done);
+            } catch (err) {
+                alexa.emit(':tellWithCard', "Sorry, this course does not exist.");
+            }
+        },
+        'CourseAttributesIntent': function() {
+            var slotCourse = "";
+            var slotNumber = "";
+            try{
+                try{
+                    slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                    slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+                }catch(err){
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                }
+                console.log(slotCourse);
+                console.log(slotNumber);
+                var name = slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+                var tableName = "Course";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'attributes'
+                };
+                db.getItem(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "Sorry, this course doesn't exist", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        try{
+                            var attributes = JSON.stringify(data.Item.attributes);
+                            alexa.emit(':tellWithCard',name + " is counted as " + attributes,"Got into DB", name);
+                        }catch(err){
+                            alexa.emit(':tellWithCard', "Sorry, this course doesn't exist", "I didnt get that, could you ask again?", "Error:", err);
+                        }
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tell', "There was an error");
+            }
+
+        },'CourseCreditsIntent': function() {
+            try{
+                var slotCourse = "";
+                var slotNumber = "";
+                try{
+                    slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                    slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+                }catch(err){
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                }
+
+                console.log(slotCourse);
+                console.log(slotNumber);
+                var name = slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+                var tableName = "Course";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'credits'
+                };
+                db.getItem(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        try{
+                            var credits = JSON.stringify(data.Item.credits);
+                            alexa.emit(':tellWithCard',credits + " credits","Got into DB", name);
+                        }catch(err){
+
+                            alexa.emit(':tellWithCard',"Sorry, this course doesn't exist", "I didnt get that, could you ask again?", "Error:", err);
+                        }
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tell', "There was an error");
+            }
+        }
+        ,
+        'CoursePrerequisitesIntent': function() {
+            try{
+                var slotCourse = "";
+                var slotNumber = "";
+                console.log(this.event.request.intent.slots.number.value);
+                try{
+                    slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                    slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+                }catch(err){
+                    alexa.emit(':tellWithCard', "I didnt get that, could you ask again?", "I didnt get that, could you ask again?", "Error:", err);
+                }
+
+                console.log(slotCourse);
+                console.log(slotNumber);
+                var name = slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+                var tableName = "Course";
+                var params = {
+                    TableName: tableName,
+                    Key: key,
+                    ProjectionExpression: 'precorequisites_courses'
+                };
+                db.getItem(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        alexa.emit(':tellWithCard', "Sorry, this course doesn't exist", "I didnt get that, could you ask again?", "Error:", err);
+                    } else {
+                        try{
+                            var courses = JSON.stringify(data.Item.precorequisites_courses);
+                            alexa.emit(':tellWithCard',"The prerequisites for "+name+ " are " +courses,"Got into DB", name);
+                        }catch(err){
+                            alexa.emit(':tellWithCard', "Sorry, this course doesn't exist", "I didnt get that, could you ask again?", "Error:", err);
+                        }
+                    }
+                }, context.done);
+            }catch(err){
+                alexa.emit(':tell', "There was an error");
+            }
+        },
+        'HasRecitationIntent': function() {
+            var slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+            var slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+            var slotSection="";
+            try{
+                slotSection = this.event.request.intent.slots.section.value.trim();
+
+            }catch(err){
+                slotSection=1;
+            }
+            var name = slotCourse + " " + slotNumber + "_" + slotSection;
+
+            var key = {
+                'name_section': name
+            };
+            var tableName = "Course_Section";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'has_recitation'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', err);
+                } else {
+                    var course = slotCourse + " " + slotNumber + " section " + slotSection;
+                    if (data.Item.has_recitation)
+                        alexa.emit(':tell', "Yes, " + course + " has a recitation");
+                    else
+                        alexa.emit(':tell', "No, " + course + " does not have a recitation");
+                }
+            }, context.done);
+        },
+        'RecitationLocationIntent': function() {
+
+            var slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+            var slotNumber =removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+            var slotSection="";
+            try{
+                slotSection = this.event.request.intent.slots.section.value.trim();
+            }catch(err){
+                alexa.emit(':tell', "Please provide a section number.");
+            }
+            var name = slotCourse + " " + slotNumber + "_" + slotSection;
+            var key = {
+                'name_section': name
+            };
+            var tableName = "Course_Section";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'recitation_location'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', "Sorry! I didn't get that.");
+                } else {
+                    var location = JSON.stringify(data.Item.recitation_location);
+                    console.log(location);
+                    if(location=="\" \"" || location=="\"\"" || location==null || location==NULL){
+                        alexa.emit(':tell', "This course does not have a recitation");
+                    }else{
+                        try{
+                            var course = slotCourse + " " + slotNumber + " section " + slotSection;
+                            alexa.emit(':tell', course + " recitation is given in " + location);
+                        }catch(err){
+                            alexa.emit(':tell', "Sorry, this course doesn't exist");
+                        }
+                    }
+                }
+            }, context.done);
+        },
+        'RecitationTimeIntent': function() {
+            var slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+            var slotNumber =removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value)));
+            var slotSection="";
+            try{
+                slotSection = this.event.request.intent.slots.section.value.trim();
+            }catch(err){
+                alexa.emit(':tell', "Please provide a section number.");
+            }
+            var name = slotCourse + " " + slotNumber + "_" + slotSection;
+            var key = {
+                'name_section': name
+            };
+            var tableName = "Course_Section";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'recitation_time'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', "Sorry! Either this course does not have a recitation");
+                } else {
+                    console.log(name);
+                    var time = JSON.stringify(data.Item.recitation_time);
+                    if(time=="\" \"" || time=="\"\"" || time==null || time==NULL || time==undefined){
+                        alexa.emit(':tell', "This course does not have a recitation");
+                    }else {
+                        try{
+                            var course = slotCourse + " " + slotNumber + " section " + slotSection;
+                            alexa.emit(':tell', course + " recitation is given on " + time);
+                        }catch(err){
+                            alexa.emit(':tell', "Sorry, this course doesn't exist");
+                        }
+                    }
+                }
+            }, context.done);
+        },
+        'SectionTimeIntent': function() {
+            var slotsection="";
+            try{
+                var slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+                var slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value.trim())));
+            } catch(err){
+                alexa.emit(':tell', "Sorry, I didn't get that. Could you repeat it?");
+            }
+            console.log(slotCourse);
+            console.log(slotNumber);
+            try{
+                slotSection = this.event.request.intent.slots.section.value.trim();
+            }catch(err){
+                alexa.emit(':tell', "Please provide a section number");
+            }
+            var name = slotCourse + " " + slotNumber + "_" + slotSection;
+            console.log(name);
+            var key = {
+                'name_section': name
+            };
+            var tableName = "Course_Section2";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'section_time'
+            };
+            console.log()
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', "Sorry! Something  went wrong!");
+                } else {
+                    console.log("here");
+                    try{
+                        var time = JSON.stringify(data.Item.section_time);
+                    }catch(err){
+                        alexa.emit(':tell', "Sorry! This course does not exist!");
+                    }
+                    console.log(time);
+                    var course = slotCourse + " " + slotNumber + " section " + slotSection;
+                    alexa.emit(':tell', course + " is given on " + time);
+                }
+            }, context.done);
+        },
+        'SectionProfessorIntent': function() {
+            var   slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+            console.log(slotCourse);
+             var   slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value.trim())));
+            console.log(slotNumber);
+            try{
+               var slotSection = this.event.request.intent.slots.section.value;
+               console.log(slotSection);
+               if(slotSection==undefined){
+                tableName = "Course";
+            var name=slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+            console.log(name);
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'professors'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', "Sorry, I didn't find that course.");
+                } else {
+                    try{
+                        var professor = JSON.stringify(data.Item.professors);
+                    }catch(err){
+                        console.log(err);
+                         alexa.emit(':tell', err);
+                    }
+                    if(professor==undefined){
+                        console.log(professor);
+                        alexa.emit(':tell', "Sorry! This course does not exist!");
+                    }
+                    alexa.emit(':tell', slotCourse + " section "+ slotNumber+ " is currently taught by " + professor);
+                }
+            }, context.done);
+            
+               }else{
+                 tableName = "Course_Section2";
+            var name=slotCourse + " " + slotNumber+"_"+slotSection;
+                var key = {
+                    'name_section': name
+                };
+            console.log(name);
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'professor'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', err);
+                } else {
+                    try{
+                        var professor = JSON.stringify(data.Item.professor);
+                    }catch(err){
+                        console.log(err);
+                         alexa.emit(':tell', err);
+                    }
+                    if(professor==undefined){
+                        console.log(professor);
+                        alexa.emit(':tell', "Sorry! This course does not exist!");
+                    }
+                   alexa.emit(':tell', slotCourse + " "+ slotNumber+ " section "+ slotSection+" is currently taught by " + professor);
+                }
+            }, context.done);
+           } }catch(err){
+                console.log(err);
+                tableName = "Course";
+            var name=slotCourse + " " + slotNumber;
+                var key = {
+                    'name': name
+                };
+            console.log(name);
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'professors'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', err);
+                } else {
+                    try{
+                        var professor = JSON.stringify(data.Item.professors);
+                    }catch(err){
+                        console.log(err);
+                         alexa.emit(':tell', err);
+                    }
+                    if(professor==undefined){
+                        console.log(professor);
+                        alexa.emit(':tell', "Sorry! This course does not exist!");
+                    }
+                    alexa.emit(':tell', slotCourse + " section "+ slotNumber+ " is currently taught by " + professor);
+                }
+            }, context.done);
+            }
+        },
+        'SectionLocationIntent': function() {
+            try{
+            var slotsection="";
+            var slotCourse = GetCourse(this.event.request.intent.slots.course.value);
+            var slotNumber = removeSpaces(text2num(GetNumber(this.event.request.intent.slots.number.value.trim())));
+            console.log(slotCourse);
+            console.log(slotNumber);
+            try{
+                slotSection = this.event.request.intent.slots.section.value.trim();
+            }catch(err){
+                alexa.emit(':tell', "Please provide a section number");
+            }
+            var name = slotCourse + " " + slotNumber + "_" + slotSection;
+            var key = {
+                'name_section': name
+            };
+            var tableName = "Course_Section";
+            var params = {
+                TableName: tableName,
+                Key: key,
+                ProjectionExpression: 'loc'
+            };
+            db.getItem(params, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    alexa.emit(':tell', "Sorry! This course does not exist!");
+                } else {
+                    var location = JSON.stringify(data.Item.loc);
+
+                    if(location=="undefined"){
+                        alexa.emit(':tell', "Sorry! This course does not exist!");
+                        console.log(err+"1");
+                    }
+                    try{
+                        var course = slotCourse + " " + slotNumber;
+                        alexa.emit(':tell', course+" is given in "+location);
+                    }catch(err){
+                        alexa.emit(':tell', "Sorry! This course does not exist!");
+                        console.log(err+"2");
+                    }
+                }
+            }, context.done);
+            }catch(err){
+                alexa.emit(':tell', "I didn't get that. Could you repeat it?");
+            }
+        }
+
+    };
+    alexa.registerHandlers(handlers);
+    alexa.execute();
+};
+function removeSpaces(value){
+    value=value+"";
+    while(value.includes(" ")){
+        value=value.replace(" ","");
+    }
+    return value;
+}
+function GetNumber(value){
+    value=value+"";
+    while(value.includes("to")){
+        value=value.replace("to ","2 ");
+        value=""+value;
+    }
+    while(value.includes("ate")){
+        value=value.replace("ate","8 " );
+    }
+    while(value.includes("for")){
+        value=value.replace("for","4 " );
+    }
+
+    while(value.includes("sticks")){
+        value=value.replace("sticks","six" );
+    }
+    console.log(value);
+    return value;
+}
+
+function GetCourse(value) {
+    switch (value.toUpperCase().trim()) {
+        case "ACCOUNTING":
+        case "ACCT":
+        case "A C C T":
+        case "ACCOUNT":
+            return  "ACCT" ;
+        case "AGRIBUSINESS":
+        case "AGRI BUSINESS":
+        case "AGRI BEZ":
+        case "AGRI BIZ":
+        case "AGRIBEZ":
+        case "AGRIBIZ":
+        case "A G B U":
+        case "AGBU":
+            return  "AGBU" ;
+        case "AGRICULTURAL SCIENCE":
+        case "AGRICULTURE":
+        case "AGRI SCIENCE":
+        case "AGSC":
+        case "A. G. S. C":
+        case "A. GSC.":
+        case "A. G. SC.":
+        case "A.G":
+        case "A G S C":
+        case "A.G.S.C":
+        case "AG. SC.":
+            return  "AGSC" ;
+        case "AMERICAN STUDIES":
+        case "A M S T":
+        case "AMST":
+        case "AMERICAN STUDY":
+            return  "AMST" ;
+        case "ANIMAL AND VETERINARY SCIENCES":
+        case "ANIMAL AND VETERINARY SCIENCE":
+        case "ANIMALS":
+        case "ANIMAL SCIENCE":
+        case "ANIMAL SCIENCES":
+        case "ANIMAL AND VETERINARY":
+        case "VETERINARY SCIENCES":
+        case "VETERINARY":
+            return  "AVSC" ;
+        case "ARABIC":
+        case "ARAB":
+        case "A R A B":
+            return  "ARAB" ;
+        case "ARCHAEOLOGY":
+        case "ARCHAEOL":
+        case "AROL":
+        case "A R O L":
+            return  "AROL" ;
+        case "ARCHITECTURE":
+        case "ARCH":
+        case "ARC":
+        case "ARCHI":
+            return  "ARCH" ;
+        case "ART HISTORY":
+        case "HISTORY OF ART":
+        case "ART HIST":
+        case "ART HISTO":
+        case "AHIS":
+        case "A H I S":
+            return  "AHIS" ;
+        case "BIOCHEMISTRY":
+        case "BIOCHEM":
+        case "BIO CHEMISTRY":
+        case "BIO CHEM":
+        case "BIOC":
+        case "B I O C":
+            return  "BIOC" ;
+        case "BIOLOGY":
+        case "BIO":
+        case "BIOL":
+        case "B I O":
+        case "B I O L":
+            return  "BIOL" ;
+        case "BIOMEDICAL ENGINEERING":
+        case "BIO MEDICAL ENGINEERING":
+        case "BMEN":
+        case "B M E N":
+            return  "BMEN" ;
+        case "BUSINESS":
+        case "BUSS":
+        case "B U S S":
+        case "BIZ":
+            return  "BUSS" ;
+        case "CHEMICAL ENGINEERING":
+        case "CHEM EN":
+        case "CHEMICAL EN":
+        case "CHEM ENGINEERING":
+        case "CHEN":
+        case "C H E N":
+            return  "CHEN" ;
+        case "CHEMISTRY":
+        case "CHEM":
+        case "C H E M":
+            return  "CHEM" ;
+        case "CHINESE":
+        case "CHIN":
+        case "C H I N":
+            return  "CHIN" ;
+        case "CIVIL":
+        case "CIVIL ENGINEERING":
+        case "CIVE":
+        case "C I V E":
+            return  "CIVE" ;
+        case "CIVILIZATION SEQUENCE":
+        case "CIVILIZATION SEQUENCE PROGRAM":
+        case "CIVILIZATION":
+        case "CVSP":
+        case "C V S P":
+            return  "CVSP" ;
+        case "C M P S":
+        case "CMPS":
+        case "COMPUTER SCIENCE":
+        case "CNPS":
+        case "C.N.P.S":
+        case "C N P S":
+        case "TNPS":
+        case "T N P S":
+        case "CNP S":
+        case "C NPS":
+        case "SHE NPS":
+        case "SHE N P S":
+        case "C. N. P. S":
+        case "C.N.P.S":
+        case "CMP ASK":
+        case "THE NPS":
+        case "C M B S":
+        case "CMBS":
+        case "CNBS":
+        case "C N B S":
+        case "TNBS":
+        case "T N B S":
+        case "CNB S":
+        case "C NBS":
+        case "SHE NBS":
+        case "SHE N B S":
+        case "C. N. B. S":
+        case "C OF THE S":
+        case "THE NBS":
+        case "N. P. S.":
+        case "N.P.S":
+        case "N. B. S":
+        case "n. BS":
+        case "N PS":
+        case "N. PS":
+        case "NPS":
+        case "THE N. P. S.":
+        case "T. N. P. S.":
+            return  "CMPS" ;
+        case "ECONOMIC":
+        case "ECON":
+        case "E C O N":
+            return  "ECON" ;
+        case "EDUCATION":
+        case "EDUC":
+        case "E D U C":
+            return  "EDUC" ;
+        case "ELECTRICAL AND COMPUTER ENGINEERING":
+        case "COMPUTER ENGINEERING":
+        case "ECE":
+        case "EECE":
+        case "E C E":
+        case "E E C E":
+        case "a. c. e":
+            return  "EECE" ;
+        case "ENGINEERING MANAGEMENT":
+        case "EN MANAGEMENT":
+        case "ENMG":
+        case "E B M G":
+        case "E N MANAGEMENT":
+            return  "ENMG" ;
+        case "ENGLISH":
+        case "ENG":
+        case "ENGL":
+        case "E N G":
+        case "E N G L":
+            return  "ENGL" ;
+        case "ENVIRONMENTAL HEALTH":
+        case "ENVIRON HEALTH":
+        case "ENHL":
+        case "E N H L":
+            return  "ENHL" ;
+        case "FINANCE":
+        case "FINANCING":
+        case "FINA":
+        case "F I N A":
+            return  "FINA" ;
+        case "FOOD SECURITY":
+        case "FOOD SEC":
+        case "FOODSEC":
+        case "FSEC":
+        case "F S E C":
+        case "F SECURITY":
+        case "F SEC":
+            return  "FSEC" ;
+        case "GEOLOGY":
+        case "GEOL":
+        case "GEO":
+        case "G E O":
+        case "G E O L":
+            return  "GEOL" ;
+        case "GRAPHIC":
+        case "GRAPHIC DESIGN":
+        case "GRAPHIC":
+        case "GRDS":
+        case "G R D S":
+        case "GR DESIGN":
+        case "G R DESIGN":
+            return  "GRDS" ;
+        case "HISTORY":
+        case "HISTO":
+        case "HIST":
+        case "H I S T":
+            return  "HIST" ;
+        case "HUMAN MORPHOLOGY":
+        case "HUMAN MORPH":
+        case "HUMAN MR":
+        case "HU MORPHOLOGY":
+        case "HUMR":
+        case "H U M R":
+            return  "HUMR" ;
+        case "INDUSTRIAL ENGINEERING":
+        case "INDUSTRIAL":
+        case "INDUSTRIAL EN":
+        case "INDUSTRIAL ENGINEERING AND MANAGEMENT":
+        case "INDE":
+        case "I N D E":
+            return  "INDE" ;
+        case "INFORMATION SYSTEM":
+        case "INFO":
+        case "I N F O":
+            return  "INFO" ;
+        case "MEDICAL LAB":
+        case "MED LAB":
+        case "MAGIC LOCK":
+        case "MAGIC LA":
+        case "MLSP":
+        case "M L S P":
+            return  "MLSP" ;
+        case "LANDSCAPE AND DESIGN":
+        case "LANDSCAPE":
+        case "LANDSCAPE ARCHITECTURE":
+        case "LDEM":
+        case "L D E M":
+            return  "LDEM" ;
+        case "MANAGEMENT":
+        case "MNGT":
+        case "M N G T":
+            return  "MNGT" ;
+        case "MARKETING":
+        case "MARKET":
+        case "MKTG":
+        case "M K T G":
+            return  "MKTG" ;
+        case "MATHEMATICS":
+        case "MATH":
+        case "M A T H":
+            return  "MATH" ;
+        case "MECHANICAL ENGINEERING":
+        case "MECH EN":
+        case "MECHANICAL EN":
+        case "MECH ENGINEERING":
+        case "MECH":
+        case "MECHANICAL":
+        case "M E C H":
+            return  "MECH" ;
+        case "MEDIA STUDIES":
+        case "M COM":
+        case "MEDIA":
+        case "M C O M":
+            return  "MCOM" ;
+        case "MEDICAL AUDIOLOGY":
+        case "AUDIOLOGY":
+        case "M AUD":
+        case "M AUDIOLOGY":
+        case "MED AUD":
+        case "MED AUDIOLOGY":
+        case "M A U D":
+            return  "MAUD" ;
+        case "MIDDLE EASTERN STUDIES":
+        case "ME STUDIES":
+        case "M E STUDIES":
+        case "MIDDLE EAST STUDIES":
+        case "MEST":
+        case "M EAST STUDIES":
+        case "M EAST":
+        case "MEST":
+        case "M E S T":
+            return  "MEST" ;
+        case "MUSIC":
+        case "MUSC":
+        case "M U S C":
+            return  "MUSC" ;
+        case "NURSING":
+        case "NURSE":
+        case "NURS":
+        case "N U R S":
+            return  "NURS" ;
+        case "NUTRITION AND FOOD SCIENCES":
+        case "NUTRITION":
+        case "FOOD SCIENCES":
+        case "NFSC":
+        case "N F S C":
+            return  "NFSC" ;
+        case "PHILOSOPHY":
+        case "PHILO":
+        case "P H I L O":
+            return  "PHIL" ;
+        case "PHYSICS":
+        case "PHYS":
+        case "P H Y S":
+            return  "PHYS" ;
+        case "PHYSIOLOGY":
+        case "PHYSIOL":
+        case "PHYL":
+        case "P H Y L":
+            return  "PHYL" ;
+        case "POLITICAL STUDIES AND PUBLIC ADMINSTRATION":
+        case "POLITICAL STUDIES":
+        case "POLITICAL SCIENCE":
+        case "PUBLIC ADMINSTRATION":
+        case "POLITICAL SCIENCE":
+        case "PSPA":
+        case "P S P A":
+        case "P.S.P.A":
+        case "PSP A":
+            return  "PSPA" ;
+        case "PSYCHOLOGY":
+        case "PSYCH":
+        case "PSYC":
+        case "P S Y C":
+        case "syc":
+        case "sike":
+            return  "PSYC" ;
+        case "PUBLIC HEALTH":
+        case "PUBL HEALTH":
+        case "HPCH":
+        case "H P C H":
+            return  "HPCH" ;
+        case "SOCIOLOGY ANTHROPOLOGY":
+        case "SOCIOLOGY":
+        case "ANTHROPOLOGY":
+        case "SOCIOLOGY AND ANTHROPOLOGY":
+        case "SOCIOL":
+        case "SOCIOL AND ANTHRO":
+        case "SOAN":
+        case "S O A N":
+            return  "SOAN" ;
+        case "STATISTICS":
+        case "STATS":
+        case "STAT":
+        case "S T A T":
+            return  "STAT" ;
+        case "STUDIO ARTS":
+        case "STUDIO ART":
+        case "S ART":
+        case "STUDIO A":
+        case "STUDIO":
+        case "SART":
+        case "S A R T":
+            return  "SART" ;
+        case "THEATER":
+        case "THEATRE":
+        case "THTR":
+        case "T H T R":
+            return  "THTR" ;
+    }
+}
+//call text2num(NumberString) to get back the number
+//notice that the string should be lower case so pass it as //NumberString.toLowerCase()
+//This is an example writeln(text2num('To oh one'.toLowerCase()));
+var Small = {
+    'zero': 0,
+    'oh': 0,
+    'o': 0,
+    'one': 1,
+    'two': 2,
+    'to': 2,
+    'three': 3,
+    'four': 4,
+    'for': 4,
+    'five': 5,
+    'six': 6,
+    'sticks': 6,
+    'seven': 7,
+    'eight': 8,
+    'ate': 8,
+    'nine': 9,
+    'ten': 10,
+    'eleven': 11,
+    'twelve': 12,
+    'thirteen': 13,
+    'fourteen': 14,
+    'fifteen': 15,
+    'sixteen': 16,
+    'seventeen': 17,
+    'eighteen': 18,
+    'nineteen': 19,
+    'twenty': 20,
+    'thirty': 30,
+    'forty': 40,
+    'fifty': 50,
+    'sixty': 60,
+    'seventy': 70,
+    'eighty': 80,
+    'ninety': 90,
+    'hundred': null
+};
+function text2num(s) {
+
+
+    if(s.includes(0)||s.includes(1)||s.includes(2)||s.includes(3)||s.includes(4)||s.includes(5)||s.includes(6)||s.includes(7)||s.includes(8)||s.includes(9)){
+        return s;
+        console.log('number');
+    }else{
+        var array = s.toString().split(/[\s-]+/);
+        var num=0;
+        var a;
+        var index=0;
+        if(s.includes('hundred')){
+            while(index<array.length){
+                a=array[index];
+                index++;
+                num= feach(a, num, 0);
+
+            }
+            return num;
+        }else if(s.includes('ty') ){
+            var d=100;
+            while(index<array.length){
+                a=array[index];
+
+                index++;
+                num=feach(a, num, 0)*d;
+                d=1;
+            }
+            return num;
+        }else{
+            var n='';
+
+            while(index<array.length){
+                a=array[index];
+                n= n + feach(a, num, 0);
+                index++;
+            }
+            return n;
+
+        }
+    }
+}
+function feach(w, g, n ) {
+    var x;
+    var x = Small[w];
+    if (x !== null) {
+        g = g + x;
+        return g;
+    }
+    else{
+        g = g * 100;
+        return g;
+    }
+
+}
+function GetDepartment(value) {
+
+    switch (value.trim()) {
+        case "architecture and design":
+        case "architecture":
+        case "graphic design":
+        case "design":
+        case "graphic":
+            return "Architecture and Design";
+        case "civil and environmental engineering":
+        case "civil":
+        case "civil engineering":
+        case "civil and environmental":
+        case "environmental":
+        case "environmental engineering":
+            return "Civil and environmental engineering";
+        case "electrical and computer engineering":
+        case "e c e":
+        case "eece":
+        case "e e c e":
+        case "ece":
+        case "electrical engineering":
+        case "computer engineering":
+            return "Electrical and Computer Engineering";
+        case "mechanical engineering":
+        case "mechanical":
+            return "Mechanical Engineering";
+        case "chemical and petroleum engineering":
+        case "chemical engineering":
+        case "peroleum engineering":
+        case "petroleum":
+        case "chemical":
+            return "chemical and petroleum engineering";
+        case "industrial engineering and management":
+        case "industrial engineering":
+        case "industrial and management":
+        case "managment":
+        case "industrial":
+            return "Industrial Engineering and Management";
+        case "arabic and near eastern languages":
+        case "arabic":
+        case "near eastern languages":
+        case "arabic and eastern languages":
+        case "eastern languages":
+            return "Arabic and Near Eastern Languages";
+        case "biology":
+            return "Biology";
+        case "chemistry":
+        case "chem":
+            return "Chemistry";
+        case "computer science":
+        case "c m p s":
+        case "cmps":
+        case "c m p s":
+        case "cmps":
+        case "computer science":
+        case "cnps":
+        case "c.n.p.s":
+        case "c n p s":
+        case "tnps":
+        case "t n p s":
+        case "cnp s":
+        case "c nps":
+        case "she nps":
+        case "she n p s":
+        case "c. n. p. s":
+        case "c.n.p.s":
+        case "the nps":
+        case "c m b s":
+        case "cmbs":
+        case "cnbs":
+        case "c n b s":
+        case "tnbs":
+        case "t n b s":
+        case "cnb s":
+        case "c nbs":
+        case "she nbs":
+        case "she n b s":
+        case "c. n. b. s":
+
+        case "the nbs":
+        case "n. p. s.":
+        case "n.p.s":
+        case "n. b. s":
+        case "n. bs":
+        case "n ps":
+        case "n. ps":
+        case "nps":
+        case "the n. p. s.":
+        case "t. n. p. s.":
+            return "Computer Science";
+        case "economics":
+        case "econ":
+            return "Economics";
+        case "education":
+            return "Education";
+        case "english":
+            return "English";
+        case "fine arts and art history":
+        case "fine arts":
+        case "arts":
+        case "art history":
+        case "history of art":
+            return "Fine Arts and Art History";
+        case "geology":
+            return "Geology";
+        case "history":
+        case "archaeology":
+        case "history and archaeology":
+            return "History and Archaeology";
+        case "mathematics":
+        case "math":
+        case "maths":
+            return "Mathematics";
+        case "philosophy":
+        case "philo":
+            return "Philosophy";
+        case "psychology":
+            return "Psychology";
+        case "political studies and public administration":
+        case "political studies":
+        case "political science":
+        case "public administration":
+        case "p s p a":
+        case "psp a":
+        case "pspa":
+        case "political science and public administration":
+            return "Political Studies and Public Administration";
+        case "physics":
+            return "Physics";
+        case "sociology, anthropology, and media studies":
+        case "sociology":
+        case "anthropology":
+        case "media":
+        case "media studies":
+        case "sociology and anthropology":
+            return "Sociology, Anthropology, and Media Studies";
+        case "environmental health":
+            return "Environmental Health";
+        case "epidemiology":
+        case "population health":
+        case "epidemiology and population health":
+            return "Epidemiology and Population Health";
+        case "health promotion":
+        case "community health":
+        case "health promotion and community health":
+            return "Health Promotion and Community Health";
+        case "health management":
+        case "health management and policy":
+        case "health policy":
+            return "Health Management and Policy";
+        case "audiology":
+        case "audiology sciences":
+        case "medical audiology":
+        case "medical audiology sciences":
+            return "Medical Audiology Sciences";
+        case "medical imaging":
+        case "imaging sciences":
+        case "medical imaging sciences":
+            return "Medical Imaging Sciences";
+        case "medical lab":
+        case "magic lock":
+        case "magic la":
+        case "medical lab sciences":
+        case "medical laboratory":
+        case "medical laboratory sciences":
+            return "Medical Laboratory Sciences";
+        case "business":
+            return "Business";
+        case "nfsc":
+        case "n f s c":
+        case "nutrition":
+        case "food sciences":
+        case "nutrition and food sciences":
+            return "Nutrition and Food Sciences";
+        case "agri":
+        case "agriculture":
+            return "Agriculture";
+        case "landscape design":
+        case "ldem":
+        case "l d e m":
+        case "ecosystem management":
+        case "landscape design and ecosystem management":
+            return "Landscape Design and Ecosystem Management";
+        case "cvsp":
+        case "c v s p":
+        case "civilization sequence":
+        case "civilization studies":
+        case "civilization":
+        case "civilization studies program":
+        case "civilization sequence program":
+            return "Civilization Studies Program";
+    }
+
+}
+function GetFacility(value) {
+    switch (value.toLowerCase().trim()) {
+        case "cafeteria":
+        case "ada dodge cafeteria":
+        case "caf":
+            return "cafeteria";
+        case "engineering library":
+        case "engineer library":
+        case "library of engineering":
+            return "engineering library";
+        case "medical gate":
+        case "medical gates":
+
+            return "medical gate";
+        case "financial aid":
+        case "financial aid office":
+        case "office of financial aid":
+            return "financial aid office";
+        case "main gate":
+        case "main gates":
+        case "main":
+            return "main gate";
+        case "a u b bookstore":
+        case "aub bookstore":
+        case "bookstore":
+        case "campus bookstore":
+            return "AUB bookstore";
+        case "sea gate":
+        case "sea gates":
+
+            return "sea gate";
+        case "bliss gate":
+        case "bliss gates":
+        case "ic gate":
+        case "i c gate":
+        case "penrose gate":
+        case "men dorms gate":
+            return "bliss gate";
+        case "charles hostler gate":
+        case "charles hostler gates":
+        case "hostler gate":
+        case "hostler gates":
+        case "gym gate":
+        case "chsc gate":
+        case "charles hostler student center gate":
+        case "hostler student center gate":
+        case "charles hostler":
+        case "hostler":
+        case "hosler":
+            return "charles hostler gate";
+        case "security office":
+        case "office of security":
+        case "protection office":
+        case "office of protection":
+        case "protection":
+        case "security":
+            return "protection office";
+        case "id center":
+        case "i d center":
+            return "id center";
+        case "sab medical library":
+        case "saab medical library":
+        case "medical library":
+        case "sml":
+        case "s m l":
+            return "sml";
+        case "cashier":
+        case "comptroller office":
+        case "office of comptroller":
+        case "office of the comptroller":
+            return "cashier";
+        case "jafet":
+        case "library":
+        case "library of jafet":
+        case "jafet library":
+            return "jafet";
+        case "science library":
+            return "science library";
+        case "osb gate":
+        case "osb gates":
+        case "o s b gate":
+        case "school of business gate":
+        case "olayan school of business gate":
+        case "business gate":
+            return "OSB gate";
+    }
+}
